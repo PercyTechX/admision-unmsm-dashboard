@@ -1,0 +1,23 @@
+// Medidas DAX para el informe de Admisión UNMSM 2027-I.
+// Créalas en la tabla "detalle" (Inicio → Nueva medida) y pega cada una por separado.
+
+Postulantes = COUNTROWS ( detalle )
+
+Ingresantes = SUM ( detalle[ingreso] )
+
+Tasa de ingreso = DIVIDE ( [Ingresantes], [Postulantes] )
+
+Postulantes por vacante = DIVIDE ( [Postulantes], [Ingresantes] )
+
+Puntaje mínimo de ingreso =
+CALCULATE ( MIN ( detalle[puntaje] ), detalle[ingreso] = 1 )
+
+Puntaje máximo = MAX ( detalle[puntaje] )
+
+Puntaje promedio = AVERAGE ( detalle[puntaje] )
+
+// Para el histograma: columna calculada (Modelado → Nueva columna) en "detalle"
+Rango de puntaje = FLOOR ( detalle[puntaje], 100 )
+
+// Para la leyenda del histograma: columna calculada en "detalle"
+Resultado = IF ( detalle[ingreso] = 1, "Ingresó", "No ingresó" )

@@ -1,0 +1,4 @@
+node_modules/
+*.pbix.bak
+.DS_Store
+Thumbs.db

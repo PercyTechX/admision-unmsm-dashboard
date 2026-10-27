@@ -1,0 +1,14 @@
+{
+  "name": "admision-unmsm-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dashboard de resultados del Examen de Admisión UNMSM 2027-I",
+  "type": "module",
+  "scripts": {
+    "scrape": "node scraper/scrape.mjs 20271",
+    "transform": "node scraper/transform.mjs 2027-I",
+    "datos": "npm run scrape && npm run transform"
+  },
+  "author": "Percy Nazario",
+  "license": "MIT"
+}

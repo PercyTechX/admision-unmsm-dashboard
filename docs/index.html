@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admisión UNMSM 2027-I</title>
+<meta name="description" content="Dashboard interactivo de los resultados del Examen de Admisión 2027-I de la Universidad Nacional Mayor de San Marcos: postulantes, ingresantes y puntajes por escuela.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --series-1: #2a78d6;
+    --de-emphasis: #c3c2b7;
+    --accent-wash: #cde2fb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --series-1: #3987e5;
+      --de-emphasis: #52514e;
+      --accent-wash: #184f95;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --series-1: #3987e5;
+    --de-emphasis: #52514e;
+    --accent-wash: #184f95;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-primary);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 16px 48px; }
+  header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 6px; font-weight: 650; }
+  h2 { font-size: 16px; margin: 0; font-weight: 600; }
+  .lede { color: var(--text-secondary); margin: 0; max-width: 720px; }
+  .sub { color: var(--text-muted); font-size: 13px; margin: 2px 0 0; }
+  a { color: var(--series-1); }
+
+  button, select, input {
+    font: inherit; color: var(--text-primary); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+  }
+  button { cursor: pointer; }
+  button:hover, select:hover { border-color: var(--axis); }
+  :focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+
+  .filtros { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 28px 0 20px; }
+  .filtros label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-secondary); }
+  .filtros select { min-width: 220px; max-width: 100%; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .tile { padding: 16px; }
+  .tile .label { font-size: 13px; color: var(--text-secondary); }
+  .tile .value { font-size: 30px; font-weight: 600; line-height: 1.2; margin-top: 4px; }
+  .tile .note { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  .card { padding: 16px; min-width: 0; }
+  .card.ancho { grid-column: 1 / -1; }
+  .card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 8px; }
+  .chart { width: 100%; height: 340px; }
+  .chart.alto { height: 460px; }
+
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; padding: 2px; gap: 2px; flex-wrap: wrap; }
+  .seg button { border: 0; padding: 5px 10px; font-size: 13px; border-radius: 6px; color: var(--text-secondary); }
+  .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--text-primary); font-weight: 600; }
+
+  .leyenda { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); }
+  .leyenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+
+  .tabla-wrap { overflow-x: auto; margin-top: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--grid); text-align: left; white-space: nowrap; }
+  th { font-weight: 600; color: var(--text-secondary); font-size: 13px; position: sticky; top: 0; background: var(--surface); }
+  th button { border: 0; padding: 0; background: none; color: inherit; font-weight: inherit; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.escuela { white-space: normal; min-width: 220px; }
+  tbody tr:hover { background: var(--page); }
+  .scroll { max-height: 520px; overflow-y: auto; }
+
+  footer { margin-top: 28px; color: var(--text-muted); font-size: 13px; }
+  footer p { margin: 4px 0; }
+
+  @media (max-width: 860px) {
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .tile .value { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Admisión UNMSM 2027-I</h1>
+      <p class="lede">Quién postuló, cuántos ingresaron y cuántos puntos hicieron falta en cada escuela de la Universidad Nacional Mayor de San Marcos.</p>
+      <p class="sub" id="fuente"></p>
+    </div>
+    <button id="tema" type="button" aria-label="Cambiar tema claro u oscuro">Tema</button>
+  </header>
+
+  <div class="filtros" role="group" aria-label="Filtros">
+    <label>Facultad <select id="f-facultad"></select></label>
+    <label>Sede <select id="f-sede"></select></label>
+    <button id="limpiar" type="button">Quitar filtros</button>
+  </div>
+
+  <section class="kpis" aria-label="Indicadores">
+    <div class="tile"><div class="label">Postulantes</div><div class="value" id="k-post"></div><div class="note">evaluados en el examen</div></div>
+    <div class="tile"><div class="label">Ingresantes</div><div class="value" id="k-ing"></div><div class="note">alcanzaron vacante</div></div>
+    <div class="tile"><div class="label">Tasa de ingreso</div><div class="value" id="k-tasa"></div><div class="note">ingresantes / postulantes</div></div>
+    <div class="tile"><div class="label">Postulantes por vacante</div><div class="value" id="k-ppv"></div><div class="note">promedio del filtro</div></div>
+  </section>
+
+  <div class="grid">
+    <section class="card ancho">
+      <div class="card-head">
+        <div>
+          <h2 id="t-ranking">Las 15 escuelas más disputadas</h2>
+          <p class="sub" id="s-ranking"></p>
+        </div>
+        <div class="seg" role="group" aria-label="Métrica del ranking">
+          <button type="button" data-metrica="postulantes_por_vacante" aria-pressed="true">Postulantes por vacante</button>
+          <button type="button" data-metrica="puntaje_minimo_ingreso" aria-pressed="false">Puntaje mínimo</button>
+          <button type="button" data-metrica="postulantes" aria-pressed="false">Postulantes</button>
+        </div>
+      </div>
+      <div class="chart alto" id="c-ranking" role="img" aria-label="Ranking de escuelas"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>¿Cuántos puntos hicieron falta?</h2>
+          <p class="sub">Postulantes por rango de 100 puntos</p>
+        </div>
+        <div class="leyenda"><span style="--c: var(--series-1)">Ingresó</span><span style="--c: var(--de-emphasis)">No ingresó</span></div>
+      </div>
+      <div class="chart" id="c-hist" role="img" aria-label="Histograma de puntajes"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Demanda vs. exigencia</h2>
+          <p class="sub">Cada punto es una escuela. Eje vertical: puntaje mínimo de ingreso</p>
+        </div>
+      </div>
+      <div class="chart" id="c-disp" role="img" aria-label="Dispersión de postulantes contra puntaje mínimo"></div>
+    </section>
+
+    <section class="card ancho">
+      <div class="card-head">
+        <div>
+          <h2>Tasa de ingreso por facultad</h2>
+          <p class="sub">Porcentaje de postulantes que alcanzó vacante</p>
+        </div>
+      </div>
+      <div class="chart alto" id="c-facultad" role="img" aria-label="Tasa de ingreso por facultad"></div>
+    </section>
+
+    <section class="card ancho">
+      <div class="card-head">
+        <div>
+          <h2>Todas las escuelas</h2>
+          <p class="sub">Haz clic en una columna para ordenar</p>
+        </div>
+        <label class="sub">Buscar <input id="buscar" type="search" placeholder="Ej.: sistemas"></label>
+      </div>
+      <div class="tabla-wrap scroll">
+        <table>
+          <thead><tr id="cabecera"></tr></thead>
+          <tbody id="filas"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p><strong>Metodología.</strong> Datos extraídos de la página pública de resultados de la Oficina Central de Admisión (modalidad EBR/EBA). Se descartaron nombres y códigos de postulante: solo se usan escuela, puntaje y resultado. La facultad se deduce del código de escuela.</p>
+    <p>Proyecto de <a href="https://github.com/PercyTechX">Percy Nazario</a> · <a href="https://github.com/PercyTechX/admision-unmsm-dashboard">código y datos en GitHub</a>. No es un sitio oficial de la UNMSM.</p>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script>
+(() => {
+  const D = window.DATOS;
+  const TODAS = 'Todas';
+  const fmt = new Intl.NumberFormat('es-PE');
+  const fmt1 = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 1 });
+  const pct = new Intl.NumberFormat('es-PE', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const titulo = (s) => s.toLowerCase().replace(/(^|[\s(-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\bY\b/g, 'y').replace(/\bDe\b/g, 'de').replace(/\bDel\b/g, 'del').replace(/\bLa\b/g, 'la').replace(/\bLos\b/g, 'los').replace(/\bE\b/g, 'e').replace(/S\.j\.l/g, 'S.J.L.');
+
+  const estado = { facultad: TODAS, sede: TODAS, metrica: 'postulantes_por_vacante', orden: 'postulantes_por_vacante', desc: true, busca: '' };
+
+  document.getElementById('fuente').innerHTML =
+    `Fuente: <a href="${esc(D.fuente)}">resultados oficiales de la OCA – UNMSM</a> · datos al ${esc(D.generado)}`;
+
+  // Filtros
+  const llenar = (id, valores) => {
+    const sel = document.getElementById(id);
+    for (const v of [TODAS, ...valores]) {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v === TODAS ? 'Todas' : v;
+      sel.appendChild(o);
+    }
+  };
+  llenar('f-facultad', [...new Set(D.escuelas.map((e) => e.facultad))].sort((a, b) => a.localeCompare(b, 'es')));
+  llenar('f-sede', [...new Set(D.escuelas.map((e) => e.sede))]);
+
+  const filtradas = () => D.escuelas.filter((e) =>
+    (estado.facultad === TODAS || e.facultad === estado.facultad) &&
+    (estado.sede === TODAS || e.sede === estado.sede));
+
+  // Tema
+  const css = () => {
+    const s = getComputedStyle(document.documentElement);
+    const v = (n) => s.getPropertyValue(n).trim();
+    return { surface: v('--surface'), text: v('--text-primary'), text2: v('--text-secondary'), muted: v('--text-muted'),
+      grid: v('--grid'), axis: v('--axis'), s1: v('--series-1'), gris: v('--de-emphasis'), border: v('--border') };
+  };
+  document.getElementById('tema').addEventListener('click', () => {
+    const r = document.documentElement;
+    const oscuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    r.dataset.theme = oscuro ? 'light' : 'dark';
+    try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
+    render();
+  });
+  try { const t = localStorage.getItem('tema'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => render());
+
+  const charts = {};
+  const chart = (id) => (charts[id] ??= echarts.init(document.getElementById(id), null, { renderer: 'svg' }));
+  addEventListener('resize', () => { Object.values(charts).forEach((c) => c.resize()); render(); });
+
+  const anchoEtiqueta = (id, max) => Math.min(max, Math.round(document.getElementById(id).clientWidth * 0.42));
+  const base = (c) => ({
+    textStyle: { fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif', color: c.text2 },
+    tooltip: {
+      backgroundColor: c.surface, borderColor: c.border, borderWidth: 1, padding: [8, 10],
+      textStyle: { color: c.text, fontSize: 13 }, extraCssText: 'box-shadow: 0 4px 16px rgba(0,0,0,.12); border-radius: 8px;',
+    },
+    animationDuration: 300,
+  });
+  const ejeValor = (c, extra = {}) => ({
+    type: 'value', axisLine: { show: false }, axisTick: { show: false },
+    splitLine: { lineStyle: { color: c.grid, width: 1 } },
+    axisLabel: { color: c.muted, fontSize: 12 }, ...extra,
+  });
+  const ejeCat = (c, extra = {}) => ({
+    type: 'category', axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false },
+    axisLabel: { color: c.text2, fontSize: 12 }, ...extra,
+  });
+  const linea = (color, nombre) => `<span style="display:inline-block;width:12px;height:2px;background:${color};vertical-align:middle;margin-right:6px"></span>${nombre}`;
+
+  const METRICAS = {
+    postulantes_por_vacante: { titulo: 'Las 15 escuelas más disputadas', sub: 'Postulantes por cada vacante', f: fmt1 },
+    puntaje_minimo_ingreso: { titulo: 'Las 15 escuelas más exigentes', sub: 'Puntaje del último ingresante', f: fmt1 },
+    postulantes: { titulo: 'Las 15 escuelas con más postulantes', sub: 'Postulantes evaluados', f: fmt },
+  };
+
+  function render() {
+    const c = css();
+    const E = filtradas();
+    const post = E.reduce((a, e) => a + e.postulantes, 0);
+    const ing = E.reduce((a, e) => a + e.ingresantes, 0);
+
+    document.getElementById('k-post').textContent = fmt.format(post);
+    document.getElementById('k-ing').textContent = fmt.format(ing);
+    document.getElementById('k-tasa').textContent = post ? pct.format(ing / post) : '–';
+    document.getElementById('k-ppv').textContent = ing ? fmt1.format(post / ing) : '–';
+
+    // Ranking
+    const m = METRICAS[estado.metrica];
+    document.getElementById('t-ranking').textContent = m.titulo;
+    document.getElementById('s-ranking').textContent = m.sub + (E.length < D.escuelas.length ? ` · ${E.length} escuelas en el filtro` : '');
+    const top = [...E].filter((e) => e[estado.metrica] !== '').sort((a, b) => b[estado.metrica] - a[estado.metrica]).slice(0, 15).reverse();
+    chart('c-ranking').setOption({
+      ...base(c),
+      grid: { left: 8, right: 56, top: 8, bottom: 8, containLabel: true },
+      xAxis: ejeValor(c, { splitNumber: 4 }),
+      yAxis: ejeCat(c, { data: top.map((e) => titulo(e.escuela)), axisLabel: { color: c.text2, fontSize: 12, width: anchoEtiqueta('c-ranking', 260), overflow: 'truncate' } }),
+      tooltip: { ...base(c).tooltip, trigger: 'item', formatter: (p) => {
+        const e = top[p.dataIndex];
+        return `<strong style="font-size:15px">${m.f.format(p.value)}</strong> ${esc(m.sub.toLowerCase())}<br>${esc(titulo(e.escuela))}<br>` +
+          `<span style="color:${c.muted}">${fmt.format(e.postulantes)} postulantes · ${fmt.format(e.ingresantes)} ingresantes</span>`;
+      } },
+      series: [{
+        type: 'bar', data: top.map((e) => e[estado.metrica]), barMaxWidth: 18, barCategoryGap: '30%',
+        itemStyle: { color: c.s1, borderRadius: [0, 4, 4, 0] },
+        emphasis: { itemStyle: { opacity: 0.85 } },
+        label: { show: true, position: 'right', color: c.text2, fontSize: 12, formatter: (p) => m.f.format(p.value) },
+      }],
+    }, true);
+
+    // Histograma
+    const n = D.escuelas[0].hist.length;
+    const ingH = Array(n).fill(0), noH = Array(n).fill(0);
+    for (const e of E) e.hist.forEach(([no, si], i) => { noH[i] += no; ingH[i] += si; });
+    let ultimo = n - 1;
+    while (ultimo > 0 && !ingH[ultimo] && !noH[ultimo]) ultimo--;
+    const rangos = Array.from({ length: ultimo + 1 }, (_, i) => `${i * D.ancho_rango}`);
+    chart('c-hist').setOption({
+      ...base(c),
+      grid: { left: 8, right: 8, top: 12, bottom: 8, containLabel: true },
+      xAxis: ejeCat(c, { data: rangos, axisLabel: { color: c.muted, fontSize: 12, interval: 1 } }),
+      yAxis: ejeValor(c, { axisLabel: { color: c.muted, fontSize: 12, formatter: (v) => v >= 1000 ? `${v / 1000}K` : v } }),
+      tooltip: { ...base(c).tooltip, trigger: 'axis', axisPointer: { type: 'shadow', shadowStyle: { color: c.grid, opacity: 0.5 } }, formatter: (ps) => {
+        const i = ps[0].dataIndex;
+        return `<span style="color:${c.muted}">${i * D.ancho_rango} – ${(i + 1) * D.ancho_rango - 1} puntos</span><br>` +
+          `<strong>${fmt.format(ingH[i])}</strong> ${linea(c.s1, 'ingresaron')}<br><strong>${fmt.format(noH[i])}</strong> ${linea(c.gris, 'no ingresaron')}`;
+      } },
+      series: [
+        { name: 'No ingresó', type: 'bar', stack: 'p', data: noH.slice(0, ultimo + 1), barCategoryGap: '12%',
+          itemStyle: { color: c.gris, borderColor: c.surface, borderWidth: 1 } },
+        { name: 'Ingresó', type: 'bar', stack: 'p', data: ingH.slice(0, ultimo + 1),
+          itemStyle: { color: c.s1, borderColor: c.surface, borderWidth: 1, borderRadius: [4, 4, 0, 0] } },
+      ],
+    }, true);
+
+    // Dispersión
+    const pts = E.filter((e) => e.puntaje_minimo_ingreso !== '');
+    const destacadas = new Set([...pts].sort((a, b) => b.postulantes - a.postulantes).slice(0, 2).map((e) => e.codigo_escuela));
+    chart('c-disp').setOption({
+      ...base(c),
+      grid: { left: 8, right: 24, top: 16, bottom: 24, containLabel: true },
+      xAxis: ejeValor(c, { type: 'log', logBase: 10, name: 'postulantes (escala log)', nameLocation: 'middle', nameGap: 28, nameTextStyle: { color: c.muted, fontSize: 12 },
+        axisLabel: { color: c.muted, fontSize: 12, formatter: (v) => v >= 1000 ? `${v / 1000}K` : v } }),
+      yAxis: ejeValor(c, { scale: true }),
+      tooltip: { ...base(c).tooltip, trigger: 'item', formatter: (p) => {
+        const e = pts[p.dataIndex];
+        return `<strong style="font-size:15px">${fmt1.format(e.puntaje_minimo_ingreso)}</strong> puntaje mínimo<br>` +
+          `<strong>${fmt.format(e.postulantes)}</strong> postulantes · ${fmt.format(e.ingresantes)} vacantes<br>` +
+          `<span style="color:${c.muted}">${esc(titulo(e.escuela))}</span>`;
+      } },
+      series: [{
+        type: 'scatter', symbolSize: 10,
+        data: pts.map((e) => ({ value: [e.postulantes, e.puntaje_minimo_ingreso],
+          label: { show: destacadas.has(e.codigo_escuela), formatter: titulo(e.escuela_base), position: 'left', color: c.text2, fontSize: 12 } })),
+        itemStyle: { color: c.s1, borderColor: c.surface, borderWidth: 2, opacity: 0.9 },
+        emphasis: { scale: 1.4 },
+      }],
+    }, true);
+
+    // Por facultad
+    const porFac = new Map();
+    for (const e of E) {
+      const a = porFac.get(e.facultad) ?? { p: 0, i: 0 };
+      a.p += e.postulantes; a.i += e.ingresantes; porFac.set(e.facultad, a);
+    }
+    const fac = [...porFac].map(([f, a]) => ({ f, ...a, t: a.i / a.p })).sort((a, b) => a.t - b.t);
+    chart('c-facultad').setOption({
+      ...base(c),
+      grid: { left: 8, right: 56, top: 8, bottom: 8, containLabel: true },
+      xAxis: ejeValor(c, { axisLabel: { color: c.muted, fontSize: 12, formatter: (v) => pct.format(v).replace(',0', '') } }),
+      yAxis: ejeCat(c, { data: fac.map((x) => x.f), axisLabel: { color: c.text2, fontSize: 12, width: anchoEtiqueta('c-facultad', 280), overflow: 'truncate' } }),
+      tooltip: { ...base(c).tooltip, trigger: 'item', formatter: (p) => {
+        const x = fac[p.dataIndex];
+        return `<strong style="font-size:15px">${pct.format(x.t)}</strong> ingresó<br>${esc(x.f)}<br>` +
+          `<span style="color:${c.muted}">${fmt.format(x.i)} de ${fmt.format(x.p)} postulantes</span>`;
+      } },
+      series: [{
+        type: 'bar', data: fac.map((x) => x.t), barMaxWidth: 16, barCategoryGap: '30%',
+        itemStyle: { color: c.s1, borderRadius: [0, 4, 4, 0] },
+        label: { show: true, position: 'right', color: c.text2, fontSize: 12, formatter: (p) => pct.format(p.value) },
+      }],
+    }, true);
+
+    tabla(E);
+  }
+
+  // Tabla
+  const COLS = [
+    ['escuela', 'Escuela', false], ['facultad', 'Facultad', false], ['sede', 'Sede', false],
+    ['postulantes', 'Postulantes', true], ['ingresantes', 'Ingresantes', true],
+    ['postulantes_por_vacante', 'Post./vacante', true], ['tasa_ingreso', 'Tasa', true],
+    ['puntaje_minimo_ingreso', 'Puntaje mín.', true], ['puntaje_maximo', 'Puntaje máx.', true],
+  ];
+  const cab = document.getElementById('cabecera');
+  for (const [k, nombre, num] of COLS) {
+    const th = document.createElement('th');
+    if (num) th.className = 'num';
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.k = k; b.textContent = nombre;
+    b.addEventListener('click', () => {
+      estado.desc = estado.orden === k ? !estado.desc : num;
+      estado.orden = k; tabla(filtradas());
+    });
+    th.appendChild(b); cab.appendChild(th);
+  }
+  function tabla(E) {
+    const q = estado.busca.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+    const filas = E.filter((e) => !q || e.escuela.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().includes(q));
+    const k = estado.orden, s = estado.desc ? -1 : 1;
+    filas.sort((a, b) => typeof a[k] === 'string' && a[k] !== '' ? s * a[k].localeCompare(b[k], 'es') : s * ((a[k] === '' ? -1 : a[k]) - (b[k] === '' ? -1 : b[k])));
+    for (const b of cab.querySelectorAll('button')) {
+      const th = b.parentElement;
+      th.setAttribute('aria-sort', b.dataset.k === k ? (estado.desc ? 'descending' : 'ascending') : 'none');
+      b.textContent = COLS.find((x) => x[0] === b.dataset.k)[1] + (b.dataset.k === k ? (estado.desc ? ' ↓' : ' ↑') : '');
+    }
+    const tb = document.getElementById('filas');
+    tb.replaceChildren(...filas.map((e) => {
+      const tr = document.createElement('tr');
+      const celdas = [
+        [titulo(e.escuela), 'escuela'], [e.facultad], [e.sede],
+        [fmt.format(e.postulantes), 'num'], [fmt.format(e.ingresantes), 'num'],
+        [e.postulantes_por_vacante === '' ? '–' : fmt1.format(e.postulantes_por_vacante), 'num'],
+        [pct.format(e.tasa_ingreso), 'num'],
+        [e.puntaje_minimo_ingreso === '' ? '–' : fmt1.format(e.puntaje_minimo_ingreso), 'num'],
+        [fmt1.format(e.puntaje_maximo), 'num'],
+      ];
+      for (const [txt, cls] of celdas) {
+        const td = document.createElement('td');
+        if (cls) td.className = cls;
+        td.textContent = txt;
+        tr.appendChild(td);
+      }
+      return tr;
+    }));
+  }
+
+  // Eventos
+  document.getElementById('f-facultad').addEventListener('change', (ev) => { estado.facultad = ev.target.value; render(); });
+  document.getElementById('f-sede').addEventListener('change', (ev) => { estado.sede = ev.target.value; render(); });
+  document.getElementById('limpiar').addEventListener('click', () => {
+    estado.facultad = estado.sede = TODAS;
+    document.getElementById('f-facultad').value = TODAS;
+    document.getElementById('f-sede').value = TODAS;
+    render();
+  });
+  document.getElementById('buscar').addEventListener('input', (ev) => { estado.busca = ev.target.value; tabla(filtradas()); });
+  for (const b of document.querySelectorAll('.seg button')) {
+    b.addEventListener('click', () => {
+      estado.metrica = b.dataset.metrica;
+      document.querySelectorAll('.seg button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      render();
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
