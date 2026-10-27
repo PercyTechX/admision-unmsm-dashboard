@@ -442,7 +442,7 @@
     const corte = 1000 / D.ancho_rango;
     const sobreCorteNo = noH.slice(corte).reduce((a, b) => a + b, 0);
     $('t-hist').textContent = sobreCorteNo
-      ? `Con 1,000 puntos no basta: ${fmt.format(sobreCorteNo)} postulantes los superaron y no ingresaron`
+      ? `${fmt.format(sobreCorteNo)} postulantes sacaron 1,000 puntos o más y aun así no ingresaron`
       : 'Distribución de puntajes del filtro';
     chart('c-hist').setOption({
       ...base(c),

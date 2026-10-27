@@ -10,7 +10,7 @@ Dashboard interactivo de los resultados del **Examen de Admisión 2027-I de la U
 - Le siguen **Arquitectura y Urbanismo** (56 por vacante) e **Ingeniería Civil** (41.5).
 - En promedio ingresó **8.6 %** de los postulantes, pero la tasa va de **2.9 %** en la Facultad de Medicina a **28.1 %** en Ciencias Matemáticas.
 - **Las sedes de San Juan de Lurigancho y Huaral son la puerta más accesible:** ingresa el 26.1 % y el 34.1 % de sus postulantes, frente al 8.4 % en Ciudad Universitaria. Contabilidad pide 942 puntos en Ciudad Universitaria, 783.8 en S.J.L. y 685 en Huaral.
-- **Con 1,000 puntos no basta:** 2,036 postulantes superaron esa nota y no ingresaron; el 54.3 % de ellos postuló a Medicina.
+- **2,036 postulantes sacaron 1,000 puntos o más y aun así no ingresaron;** el 54.3 % de ellos postuló a Medicina.
 - Demanda y exigencia van juntas: a más postulantes, más puntaje para ingresar (r = 0.80 entre el logaritmo de postulantes y el puntaje mínimo).
 
 ## Cómo está hecho
