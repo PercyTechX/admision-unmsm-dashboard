@@ -6,49 +6,29 @@
 <title>Admisión UNMSM 2027-I</title>
 <meta name="description" content="Dashboard interactivo de los resultados del Examen de Admisión 2027-I de la Universidad Nacional Mayor de San Marcos: postulantes, ingresantes y puntajes por escuela.">
 <style>
-  :root {
+  /* Layout: franja guinda con el hallazgo principal; filtros e indicadores flotan sobre ella;
+     las secciones siguen la historia: brecha → presión → cuánto hace falta → por qué → alternativa → detalle. Solo tema claro. */
+  :root, :root[data-theme="dark"] {
     color-scheme: light;
-    --page: #f9f9f7;
-    --surface: #fcfcfb;
-    --text-primary: #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted: #898781;
-    --grid: #e1e0d9;
-    --axis: #c3c2b7;
-    --border: rgba(11, 11, 11, 0.10);
-    --series-1: #2a78d6;
-    --de-emphasis: #c3c2b7;
-    --accent-wash: #cde2fb;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --page: #0d0d0d;
-      --surface: #1a1a19;
-      --text-primary: #f0efec;
-      --text-secondary: #c3c2b7;
-      --text-muted: #898781;
-      --grid: #2c2c2a;
-      --axis: #383835;
-      --border: rgba(255, 255, 255, 0.10);
-      --series-1: #3987e5;
-      --de-emphasis: #52514e;
-      --accent-wash: #184f95;
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --page: #0d0d0d;
-    --surface: #1a1a19;
-    --text-primary: #f0efec;
-    --text-secondary: #c3c2b7;
-    --text-muted: #898781;
-    --grid: #2c2c2a;
-    --axis: #383835;
-    --border: rgba(255, 255, 255, 0.10);
-    --series-1: #3987e5;
-    --de-emphasis: #52514e;
-    --accent-wash: #184f95;
+    --page: #f5f1ef;
+    --surface: #ffffff;
+    --text-primary: #1f1a1b;
+    --text-secondary: #5a5254;
+    --text-muted: #756c6e;
+    --grid: #ece6e4;
+    --axis: #d3cac8;
+    --border: rgba(60, 20, 28, 0.08);
+    --series-1: #9e0c26;
+    --guinda-oscuro: #6b0719;
+    --de-emphasis: #b9aeac;
+    --accent-wash: #f6e1e5;
+    --row-hover: #faf5f4;
+    --meter-track: #efe6e4;
+    --hero-ink: #ffffff;
+    --hero-sub: #f2d2d8;
+    --shadow-sm: 0 1px 2px rgba(60, 20, 28, 0.06), 0 4px 14px -8px rgba(60, 20, 28, 0.12);
+    --shadow: 0 1px 2px rgba(60, 20, 28, 0.05), 0 12px 32px -14px rgba(60, 20, 28, 0.24);
+    --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   }
 
   * { box-sizing: border-box; }
@@ -56,98 +36,148 @@
     margin: 0;
     background: var(--page);
     color: var(--text-primary);
-    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 15px/1.55 var(--font);
   }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 16px 48px; }
-  header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
-  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 6px; font-weight: 650; }
-  h2 { font-size: 16px; margin: 0; font-weight: 600; }
-  .lede { color: var(--text-secondary); margin: 0; max-width: 720px; }
-  .sub { color: var(--text-muted); font-size: 13px; margin: 2px 0 0; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  main.wrap { padding-block: 0 48px; }
+
+  .hero { background: linear-gradient(135deg, var(--series-1) 0%, var(--guinda-oscuro) 100%); color: var(--hero-ink); }
+  .hero .wrap { padding-block: 40px 88px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hero-sub); margin: 0 0 12px; }
+  h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.1; margin: 0 0 14px; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance; max-width: 900px; }
+  .hero .lede { color: var(--hero-sub); margin: 0; max-width: 680px; font-size: 17px; }
+  .hero .fuente { color: var(--hero-sub); font-size: 13px; margin: 16px 0 0; }
+  .hero a { color: var(--hero-ink); }
+  .hero :focus-visible { outline-color: var(--hero-ink); }
+  h2 { font-size: 18px; line-height: 1.3; margin: 0; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { color: var(--text-muted); font-size: 13px; margin: 4px 0 0; }
   a { color: var(--series-1); }
 
   button, select, input {
     font: inherit; color: var(--text-primary); background: var(--surface);
-    border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+    border: 1px solid var(--axis); border-radius: 10px; padding: 8px 12px;
   }
-  button { cursor: pointer; }
-  button:hover, select:hover { border-color: var(--axis); }
+  button { cursor: pointer; font-weight: 500; }
+  button:hover, select:hover, input:hover { border-color: var(--text-muted); }
   :focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
 
-  .filtros { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 28px 0 20px; }
-  .filtros label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-secondary); }
-  .filtros select { min-width: 220px; max-width: 100%; }
+  .campo { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+  .campo select, .campo input { text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 14px; color: var(--text-primary); }
 
-  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-  .tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-  .tile { padding: 16px; }
-  .tile .label { font-size: 13px; color: var(--text-secondary); }
-  .tile .value { font-size: 30px; font-weight: 600; line-height: 1.2; margin-top: 4px; }
-  .tile .note { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .filtros {
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: end;
+    margin-top: -56px; padding: 16px 20px; position: relative;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+  }
+  .filtros select { min-width: 240px; max-width: 100%; }
+  .filtros .resumen { margin-left: auto; align-self: center; font-size: 13px; color: var(--text-muted); }
+  #limpiar { background: var(--accent-wash); border-color: transparent; color: var(--series-1); font-weight: 600; }
+  #limpiar:hover:not(:disabled) { background: var(--series-1); color: var(--hero-ink); }
+  #limpiar:disabled { opacity: 0.5; cursor: default; }
 
-  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
-  .card { padding: 16px; min-width: 0; }
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+  .tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+  .tile { padding: 18px 20px; display: flex; flex-direction: column; gap: 4px; box-shadow: var(--shadow); }
+  .tile .label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+  .tile .value { font-size: 34px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+  .tile.destacado .value { color: var(--series-1); }
+  .tile .note { font-size: 13px; color: var(--text-secondary); }
+  .meter { height: 8px; border-radius: 999px; background: var(--meter-track); box-shadow: inset 0 0 0 1px var(--border); overflow: hidden; margin-top: 6px; }
+  .meter i { display: block; height: 100%; border-radius: 999px; background: var(--series-1); transition: width .3s ease; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+  .card { padding: 20px 22px; min-width: 0; box-shadow: var(--shadow-sm); }
   .card.ancho { grid-column: 1 / -1; }
-  .card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 8px; }
+  .card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--grid); }
+  .card-head > div:first-child { min-width: 0; flex: 1 1 320px; }
   .chart { width: 100%; height: 340px; }
-  .chart.alto { height: 460px; }
+  .chart.alto { height: 470px; }
+  .chart.bajo { height: 200px; }
 
-  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; padding: 2px; gap: 2px; flex-wrap: wrap; }
-  .seg button { border: 0; padding: 5px 10px; font-size: 13px; border-radius: 6px; color: var(--text-secondary); }
-  .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--text-primary); font-weight: 600; }
+  .seg { display: inline-flex; background: var(--page); border-radius: 12px; padding: 4px; gap: 2px; flex-wrap: wrap; }
+  .seg button { border: 0; padding: 6px 12px; font-size: 13px; border-radius: 9px; color: var(--text-secondary); background: transparent; }
+  .seg button:hover { color: var(--text-primary); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--series-1); font-weight: 700; box-shadow: var(--shadow-sm), 0 0 0 1px var(--border); }
 
   .leyenda { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); }
-  .leyenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+  .leyenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
 
-  .tabla-wrap { overflow-x: auto; margin-top: 8px; }
+  .sedes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px; align-items: start; }
+  .sedes h3 { font-size: 13px; font-weight: 700; margin: 0 0 8px; color: var(--text-secondary); }
+
+  .tabla-wrap { overflow-x: auto; overscroll-behavior-x: contain; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th, td { padding: 8px 10px; border-bottom: 1px solid var(--grid); text-align: left; white-space: nowrap; }
-  th { font-weight: 600; color: var(--text-secondary); font-size: 13px; position: sticky; top: 0; background: var(--surface); }
-  th button { border: 0; padding: 0; background: none; color: inherit; font-weight: inherit; }
+  th, td { padding: 9px 12px; border-bottom: 1px solid var(--grid); text-align: left; white-space: nowrap; }
+  th { font-weight: 700; color: var(--text-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; position: sticky; top: 0; background: var(--surface); box-shadow: inset 0 -1px 0 var(--axis); }
+  th[aria-sort$="ending"] { color: var(--series-1); }
+  th button { border: 0; padding: 0; background: none; color: inherit; font-weight: inherit; text-transform: inherit; letter-spacing: inherit; }
+  th button:hover { color: var(--series-1); }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  td.escuela { white-space: normal; min-width: 220px; }
-  tbody tr:hover { background: var(--page); }
+  td.escuela { white-space: normal; min-width: 220px; font-weight: 600; }
+  tbody tr:hover { background: var(--row-hover); }
   .scroll { max-height: 520px; overflow-y: auto; }
+  #buscar { min-width: 220px; }
+  .vacio { color: var(--text-muted); font-size: 14px; margin: 8px 0 0; }
 
-  footer { margin-top: 28px; color: var(--text-muted); font-size: 13px; }
-  footer p { margin: 4px 0; }
+  footer { margin-top: 16px; padding: 18px 22px; color: var(--text-muted); font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-sm); }
+  footer p { margin: 4px 0; max-width: 900px; }
 
   @media (max-width: 860px) {
     .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid { grid-template-columns: minmax(0, 1fr); }
-    .tile .value { font-size: 24px; }
+    .grid, .sedes { grid-template-columns: minmax(0, 1fr); }
+    .tile .label { min-height: 2.6em; }
+    .tile .value { font-size: 26px; }
+    .filtros select, #buscar { min-width: 0; width: 100%; }
+    .filtros .campo { flex: 1 1 200px; }
+    .filtros .resumen { margin-left: 0; }
+    td.escuela { min-width: 160px; }
   }
+  @media (prefers-reduced-motion: reduce) { .meter i { transition: none; } }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Admisión UNMSM 2027-I</h1>
-      <p class="lede">Quién postuló, cuántos ingresaron y cuántos puntos hicieron falta en cada escuela de la Universidad Nacional Mayor de San Marcos.</p>
-      <p class="sub" id="fuente"></p>
-    </div>
-    <button id="tema" type="button" aria-label="Cambiar tema claro u oscuro">Tema</button>
-  </header>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Admisión UNMSM 2027-I · Modalidad EBR / EBA</p>
+    <h1>En San Marcos ingresa 1 de cada 12.<br>En Medicina, 1 de cada 88.</h1>
+    <p class="lede">28,668 postulantes compitieron por 2,474 vacantes, y la competencia se concentra en pocas carreras: solo Medicina Humana reunió el 16.9&nbsp;% de los postulantes.</p>
+    <p class="fuente" id="fuente"></p>
+  </div>
+</header>
 
+<main class="wrap">
   <div class="filtros" role="group" aria-label="Filtros">
-    <label>Facultad <select id="f-facultad"></select></label>
-    <label>Sede <select id="f-sede"></select></label>
+    <label class="campo">Facultad <select id="f-facultad"></select></label>
+    <label class="campo">Sede <select id="f-sede"></select></label>
     <button id="limpiar" type="button">Quitar filtros</button>
+    <span class="resumen" id="resumen" aria-live="polite"></span>
   </div>
 
   <section class="kpis" aria-label="Indicadores">
     <div class="tile"><div class="label">Postulantes</div><div class="value" id="k-post"></div><div class="note">evaluados en el examen</div></div>
-    <div class="tile"><div class="label">Ingresantes</div><div class="value" id="k-ing"></div><div class="note">alcanzaron vacante</div></div>
-    <div class="tile"><div class="label">Tasa de ingreso</div><div class="value" id="k-tasa"></div><div class="note">ingresantes / postulantes</div></div>
-    <div class="tile"><div class="label">Postulantes por vacante</div><div class="value" id="k-ppv"></div><div class="note">promedio del filtro</div></div>
+    <div class="tile"><div class="label">Vacantes cubiertas</div><div class="value" id="k-ing"></div><div class="note">postulantes que ingresaron</div></div>
+    <div class="tile destacado"><div class="label">Tasa de ingreso</div><div class="value" id="k-tasa"></div><div class="meter" aria-hidden="true"><i id="k-tasa-barra"></i></div><div class="note" id="k-tasa-nota"></div></div>
+    <div class="tile"><div class="label">Puntaje más exigente</div><div class="value" id="k-max"></div><div class="note" id="k-max-nota"></div></div>
   </section>
 
   <div class="grid">
     <section class="card ancho">
       <div class="card-head">
         <div>
-          <h2 id="t-ranking">Las 15 escuelas más disputadas</h2>
+          <h2 id="t-facultad"></h2>
+          <p class="sub">Tasa de ingreso por facultad (ingresantes / postulantes). La línea marca el promedio del filtro.</p>
+        </div>
+      </div>
+      <div class="chart alto" id="c-facultad" role="img" aria-label="Tasa de ingreso por facultad"></div>
+    </section>
+
+    <section class="card ancho">
+      <div class="card-head">
+        <div>
+          <h2 id="t-ranking"></h2>
           <p class="sub" id="s-ranking"></p>
         </div>
         <div class="seg" role="group" aria-label="Métrica del ranking">
@@ -162,8 +192,8 @@
     <section class="card">
       <div class="card-head">
         <div>
-          <h2>¿Cuántos puntos hicieron falta?</h2>
-          <p class="sub">Postulantes por rango de 100 puntos</p>
+          <h2 id="t-hist"></h2>
+          <p class="sub">Postulantes por rango de 100 puntos; cada etiqueta marca el inicio del rango</p>
         </div>
         <div class="leyenda"><span style="--c: var(--series-1)">Ingresó</span><span style="--c: var(--de-emphasis)">No ingresó</span></div>
       </div>
@@ -173,8 +203,8 @@
     <section class="card">
       <div class="card-head">
         <div>
-          <h2>Demanda vs. exigencia</h2>
-          <p class="sub">Cada punto es una escuela. Eje vertical: puntaje mínimo de ingreso</p>
+          <h2 id="t-disp"></h2>
+          <p class="sub" id="s-disp"></p>
         </div>
       </div>
       <div class="chart" id="c-disp" role="img" aria-label="Dispersión de postulantes contra puntaje mínimo"></div>
@@ -183,20 +213,35 @@
     <section class="card ancho">
       <div class="card-head">
         <div>
-          <h2>Tasa de ingreso por facultad</h2>
-          <p class="sub">Porcentaje de postulantes que alcanzó vacante</p>
+          <h2 id="t-sedes"></h2>
+          <p class="sub">San Marcos dicta algunas carreras también en San Juan de Lurigancho y Huaral</p>
         </div>
       </div>
-      <div class="chart alto" id="c-facultad" role="img" aria-label="Tasa de ingreso por facultad"></div>
+      <div class="sedes">
+        <div>
+          <h3>Tasa de ingreso por sede</h3>
+          <div class="chart bajo" id="c-sedes" role="img" aria-label="Tasa de ingreso por sede"></div>
+        </div>
+        <div>
+          <h3>Misma carrera, distinta sede: puntaje mínimo de ingreso</h3>
+          <div class="tabla-wrap">
+            <table>
+              <thead><tr><th>Carrera</th><th class="num">Ciudad Univ.</th><th class="num">S.J.L.</th><th class="num">Huaral</th></tr></thead>
+              <tbody id="sedes-filas"></tbody>
+            </table>
+          </div>
+          <p class="vacio" id="sedes-vacio" hidden>El filtro actual no incluye carreras que se dicten en más de una sede.</p>
+        </div>
+      </div>
     </section>
 
     <section class="card ancho">
       <div class="card-head">
         <div>
           <h2>Todas las escuelas</h2>
-          <p class="sub">Haz clic en una columna para ordenar</p>
+          <p class="sub">Puntaje mínimo = nota del último ingresante de cada escuela. Haz clic en una columna para ordenar.</p>
         </div>
-        <label class="sub">Buscar <input id="buscar" type="search" placeholder="Ej.: sistemas"></label>
+        <label class="campo">Buscar carrera <input id="buscar" type="search" placeholder="Ej.: sistemas"></label>
       </div>
       <div class="tabla-wrap scroll">
         <table>
@@ -208,10 +253,10 @@
   </div>
 
   <footer>
-    <p><strong>Metodología.</strong> Datos extraídos de la página pública de resultados de la Oficina Central de Admisión (modalidad EBR/EBA). Se descartaron nombres y códigos de postulante: solo se usan escuela, puntaje y resultado. La facultad se deduce del código de escuela.</p>
-    <p>Proyecto de <a href="https://github.com/PercyTechX">Percy Nazario</a> · <a href="https://github.com/PercyTechX/admision-unmsm-dashboard">código y datos en GitHub</a>. No es un sitio oficial de la UNMSM.</p>
+    <p><strong>Cómo lo hice.</strong> 28,668 resultados extraídos con un scraper en Node.js de la página pública de la Oficina Central de Admisión (modalidad EBR/EBA) → anonimizados (sin nombres ni códigos de postulante) → agregados en 95 escuelas → visualizados con ECharts y Power BI. La facultad se deduce del código de escuela.</p>
+    <p>Proyecto de <a href="https://github.com/PercyTechX">Percy Nazario</a> · <a href="https://github.com/PercyTechX/admision-unmsm-dashboard">código y datos en GitHub</a>. Análisis independiente; no es un sitio oficial de la UNMSM.</p>
   </footer>
-</div>
+</main>
 
 <script src="data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
@@ -219,23 +264,24 @@
 (() => {
   const D = window.DATOS;
   const TODAS = 'Todas';
+  const CU = 'Ciudad Universitaria';
   const fmt = new Intl.NumberFormat('es-PE');
   const fmt1 = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 1 });
   const pct = new Intl.NumberFormat('es-PE', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const titulo = (s) => s.toLowerCase().replace(/(^|[\s(-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\bY\b/g, 'y').replace(/\bDe\b/g, 'de').replace(/\bDel\b/g, 'del').replace(/\bLa\b/g, 'la').replace(/\bLos\b/g, 'los').replace(/\bE\b/g, 'e').replace(/S\.j\.l/g, 'S.J.L.');
+  const $ = (id) => document.getElementById(id);
 
   const estado = { facultad: TODAS, sede: TODAS, metrica: 'postulantes_por_vacante', orden: 'postulantes_por_vacante', desc: true, busca: '' };
 
-  document.getElementById('fuente').innerHTML =
-    `Fuente: <a href="${esc(D.fuente)}">resultados oficiales de la OCA – UNMSM</a> · datos al ${esc(D.generado)}`;
+  $('fuente').innerHTML = `Fuente: <a href="${esc(D.fuente)}">resultados oficiales de la OCA – UNMSM</a> · datos al ${esc(D.generado)}`;
 
   // Filtros
   const llenar = (id, valores) => {
-    const sel = document.getElementById(id);
+    const sel = $(id);
     for (const v of [TODAS, ...valores]) {
       const o = document.createElement('option');
-      o.value = v; o.textContent = v === TODAS ? 'Todas' : v;
+      o.value = v; o.textContent = v;
       sel.appendChild(o);
     }
   };
@@ -246,51 +292,66 @@
     (estado.facultad === TODAS || e.facultad === estado.facultad) &&
     (estado.sede === TODAS || e.sede === estado.sede));
 
-  // Tema
+  // Colores: se leen de los tokens CSS
   const css = () => {
-    const s = getComputedStyle(document.documentElement);
-    const v = (n) => s.getPropertyValue(n).trim();
+    const st = getComputedStyle(document.documentElement);
+    const v = (n) => st.getPropertyValue(n).trim();
     return { surface: v('--surface'), text: v('--text-primary'), text2: v('--text-secondary'), muted: v('--text-muted'),
-      grid: v('--grid'), axis: v('--axis'), s1: v('--series-1'), gris: v('--de-emphasis'), border: v('--border') };
+      grid: v('--grid'), axis: v('--axis'), s1: v('--series-1'), gris: v('--de-emphasis'), border: v('--border'), wash: v('--accent-wash') };
   };
-  document.getElementById('tema').addEventListener('click', () => {
-    const r = document.documentElement;
-    const oscuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-    r.dataset.theme = oscuro ? 'light' : 'dark';
-    try { localStorage.setItem('tema', r.dataset.theme); } catch (e) {}
-    render();
-  });
-  try { const t = localStorage.getItem('tema'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => render());
 
   const charts = {};
-  const chart = (id) => (charts[id] ??= echarts.init(document.getElementById(id), null, { renderer: 'svg' }));
+  const chart = (id) => (charts[id] ??= echarts.init($(id), null, { renderer: 'svg' }));
   addEventListener('resize', () => { Object.values(charts).forEach((c) => c.resize()); render(); });
 
-  const anchoEtiqueta = (id, max) => Math.min(max, Math.round(document.getElementById(id).clientWidth * 0.42));
+  // Las etiquetas del eje Y se truncan a un ancho fijo y el margen izquierdo se reserva a mano,
+  // así no dependen de que la fuente haya cargado cuando ECharts las mide.
+  const anchoEtiqueta = (id, max) => Math.min(max, Math.round($(id).clientWidth * 0.4));
+  const estrecho = (id) => $(id).clientWidth < 520;
+
   const base = (c) => ({
-    textStyle: { fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif', color: c.text2 },
+    textStyle: { fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif', color: c.text2 },
     tooltip: {
-      backgroundColor: c.surface, borderColor: c.border, borderWidth: 1, padding: [8, 10],
-      textStyle: { color: c.text, fontSize: 13 }, extraCssText: 'box-shadow: 0 4px 16px rgba(0,0,0,.12); border-radius: 8px;',
+      backgroundColor: c.surface, borderColor: c.border, borderWidth: 1, padding: [8, 12],
+      textStyle: { color: c.text, fontSize: 13 }, extraCssText: 'border-radius: 10px; box-shadow: 0 8px 24px -8px rgba(60,20,28,.25);',
     },
     animationDuration: 300,
   });
   const ejeValor = (c, extra = {}) => ({
     type: 'value', axisLine: { show: false }, axisTick: { show: false },
-    splitLine: { lineStyle: { color: c.grid, width: 1 } },
-    axisLabel: { color: c.muted, fontSize: 12 }, ...extra,
+    splitLine: { lineStyle: { color: c.grid, width: 1 } }, ...extra,
+    axisLabel: { color: c.muted, fontSize: 12, hideOverlap: true, ...(extra.axisLabel ?? {}) },
   });
   const ejeCat = (c, extra = {}) => ({
-    type: 'category', axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false },
-    axisLabel: { color: c.text2, fontSize: 12 }, ...extra,
+    type: 'category', axisLine: { lineStyle: { color: c.axis } }, axisTick: { show: false }, ...extra,
+    axisLabel: { color: c.text2, fontSize: 12, ...(extra.axisLabel ?? {}) },
   });
+  const barrasH = (c, id, etiquetas, maxAncho) => {
+    const w = anchoEtiqueta(id, maxAncho);
+    return {
+      grid: { left: w + 12, right: 64, top: 8, bottom: 24, containLabel: false },
+      yAxis: ejeCat(c, { data: etiquetas, axisLabel: { width: w, overflow: 'truncate', ellipsis: '…' } }),
+    };
+  };
   const linea = (color, nombre) => `<span style="display:inline-block;width:12px;height:2px;background:${color};vertical-align:middle;margin-right:6px"></span>${nombre}`;
 
   const METRICAS = {
-    postulantes_por_vacante: { titulo: 'Las 15 escuelas más disputadas', sub: 'Postulantes por cada vacante', f: fmt1 },
-    puntaje_minimo_ingreso: { titulo: 'Las 15 escuelas más exigentes', sub: 'Puntaje del último ingresante', f: fmt1 },
-    postulantes: { titulo: 'Las 15 escuelas con más postulantes', sub: 'Postulantes evaluados', f: fmt },
+    postulantes_por_vacante: {
+      sub: 'Postulantes por cada vacante · top 15 del filtro', f: fmt1,
+      titulo: ([a, b]) => b
+        ? `${titulo(a.escuela)} tuvo ${fmt1.format(a.postulantes_por_vacante)} postulantes por vacante, ${fmt1.format(a.postulantes_por_vacante / b.postulantes_por_vacante)} veces más que ${titulo(b.escuela)}`
+        : `${titulo(a.escuela)} tuvo ${fmt1.format(a.postulantes_por_vacante)} postulantes por vacante`,
+    },
+    puntaje_minimo_ingreso: {
+      sub: 'Puntaje mínimo = nota del último ingresante · top 15 del filtro', f: fmt1,
+      titulo: ([a, b]) => b
+        ? `Para ingresar a ${titulo(a.escuela)} hicieron falta ${fmt1.format(a.puntaje_minimo_ingreso)} puntos, ${fmt1.format(a.puntaje_minimo_ingreso - b.puntaje_minimo_ingreso)} más que en ${titulo(b.escuela)}`
+        : `Para ingresar a ${titulo(a.escuela)} hicieron falta ${fmt1.format(a.puntaje_minimo_ingreso)} puntos`,
+    },
+    postulantes: {
+      sub: 'Postulantes evaluados · top 15 del filtro', f: fmt,
+      titulo: ([a], total) => `${titulo(a.escuela)} reunió ${fmt.format(a.postulantes)} postulantes, el ${pct.format(a.postulantes / total)} del filtro`,
+    },
   };
 
   function render() {
@@ -298,69 +359,143 @@
     const E = filtradas();
     const post = E.reduce((a, e) => a + e.postulantes, 0);
     const ing = E.reduce((a, e) => a + e.ingresantes, 0);
+    const prom = post ? ing / post : 0;
 
-    document.getElementById('k-post').textContent = fmt.format(post);
-    document.getElementById('k-ing').textContent = fmt.format(ing);
-    document.getElementById('k-tasa').textContent = post ? pct.format(ing / post) : '–';
-    document.getElementById('k-ppv').textContent = ing ? fmt1.format(post / ing) : '–';
+    // Filtros y KPIs
+    const hayFiltro = estado.facultad !== TODAS || estado.sede !== TODAS;
+    $('limpiar').disabled = !hayFiltro;
+    $('resumen').textContent = `Mostrando ${E.length} de ${D.escuelas.length} escuelas`;
+    $('k-post').textContent = fmt.format(post);
+    $('k-ing').textContent = fmt.format(ing);
+    $('k-tasa').textContent = post ? pct.format(prom) : '–';
+    $('k-tasa-barra').style.width = `${prom * 100}%`;
+    $('k-tasa-nota').textContent = ing ? `ingresa 1 de cada ${fmt.format(Math.round(post / ing))} postulantes` : 'sin ingresantes';
+    const exigente = [...E].filter((e) => e.puntaje_minimo_ingreso !== '').sort((a, b) => b.puntaje_minimo_ingreso - a.puntaje_minimo_ingreso)[0];
+    $('k-max').textContent = exigente ? fmt1.format(exigente.puntaje_minimo_ingreso) : '–';
+    $('k-max-nota').textContent = exigente ? `último ingresante a ${titulo(exigente.escuela)}` : '';
 
-    // Ranking
+    // 1. Brecha entre facultades
+    const porFac = new Map();
+    for (const e of E) {
+      const a = porFac.get(e.facultad) ?? { p: 0, i: 0 };
+      a.p += e.postulantes; a.i += e.ingresantes; porFac.set(e.facultad, a);
+    }
+    const fac = [...porFac].map(([f, a]) => ({ f, ...a, t: a.i / a.p })).sort((a, b) => a.t - b.t);
+    const facMin = fac[0], facMax = fac.at(-1);
+    $('t-facultad').textContent = fac.length > 1
+      ? `En ${facMax.f} ingresa el ${pct.format(facMax.t)}; en ${facMin.f}, apenas el ${pct.format(facMin.t)}`
+      : `En ${facMax.f} ingresa el ${pct.format(facMax.t)} de los postulantes`;
+    chart('c-facultad').setOption({
+      ...base(c),
+      ...barrasH(c, 'c-facultad', fac.map((x) => x.f), 300),
+      xAxis: ejeValor(c, { splitNumber: estrecho('c-facultad') ? 2 : 5, axisLabel: { formatter: (v) => pct.format(v).replace(',0', '').replace('.0', '') } }),
+      tooltip: { ...base(c).tooltip, trigger: 'item', formatter: (p) => {
+        const x = fac[p.dataIndex];
+        if (!x) return '';
+        return `<strong style="font-size:15px">${pct.format(x.t)}</strong> ingresó<br>${esc(x.f)}<br>` +
+          `<span style="color:${c.muted}">${fmt.format(x.i)} de ${fmt.format(x.p)} postulantes</span>`;
+      } },
+      series: [{
+        type: 'bar', barMaxWidth: 16, barCategoryGap: '30%',
+        data: fac.map((x, i) => ({ value: x.t, itemStyle: { color: fac.length > 2 && i > 0 && i < fac.length - 1 ? c.gris : c.s1 } })),
+        itemStyle: { borderRadius: [0, 4, 4, 0] },
+        label: { show: true, position: 'right', color: c.text2, fontSize: 12, formatter: (p) => pct.format(p.value) },
+        markLine: fac.length > 1 ? {
+          symbol: 'none', silent: true, data: [{ xAxis: prom }],
+          lineStyle: { color: c.text2, width: 1, type: 'solid' },
+          label: { formatter: `Promedio ${pct.format(prom)}`, color: c.text2, fontSize: 12, position: 'end' },
+        } : undefined,
+      }],
+    }, true);
+
+    // 2. Dónde está la presión
     const m = METRICAS[estado.metrica];
-    document.getElementById('t-ranking').textContent = m.titulo;
-    document.getElementById('s-ranking').textContent = m.sub + (E.length < D.escuelas.length ? ` · ${E.length} escuelas en el filtro` : '');
-    const top = [...E].filter((e) => e[estado.metrica] !== '').sort((a, b) => b[estado.metrica] - a[estado.metrica]).slice(0, 15).reverse();
+    const top = [...E].filter((e) => e[estado.metrica] !== '').sort((a, b) => b[estado.metrica] - a[estado.metrica]).slice(0, 15);
+    $('t-ranking').textContent = top.length ? m.titulo(top, post) : 'Sin escuelas en el filtro';
+    $('s-ranking').textContent = m.sub;
+    const rank = [...top].reverse();
     chart('c-ranking').setOption({
       ...base(c),
-      grid: { left: 8, right: 56, top: 8, bottom: 8, containLabel: true },
-      xAxis: ejeValor(c, { splitNumber: 4 }),
-      yAxis: ejeCat(c, { data: top.map((e) => titulo(e.escuela)), axisLabel: { color: c.text2, fontSize: 12, width: anchoEtiqueta('c-ranking', 260), overflow: 'truncate' } }),
+      ...barrasH(c, 'c-ranking', rank.map((e) => titulo(e.escuela)), 280),
+      xAxis: ejeValor(c, { splitNumber: estrecho('c-ranking') ? 2 : 5, max: (v) => Math.ceil(v.max * 1.08),
+        axisLabel: { showMaxLabel: false, formatter: (v) => (v >= 1000 ? `${fmt1.format(v / 1000)}K` : v) } }),
       tooltip: { ...base(c).tooltip, trigger: 'item', formatter: (p) => {
-        const e = top[p.dataIndex];
-        return `<strong style="font-size:15px">${m.f.format(p.value)}</strong> ${esc(m.sub.toLowerCase())}<br>${esc(titulo(e.escuela))}<br>` +
+        const e = rank[p.dataIndex];
+        return `<strong style="font-size:15px">${m.f.format(p.value)}</strong> ${esc(m.sub.split(' · ')[0].toLowerCase())}<br>${esc(titulo(e.escuela))}<br>` +
           `<span style="color:${c.muted}">${fmt.format(e.postulantes)} postulantes · ${fmt.format(e.ingresantes)} ingresantes</span>`;
       } },
       series: [{
-        type: 'bar', data: top.map((e) => e[estado.metrica]), barMaxWidth: 18, barCategoryGap: '30%',
-        itemStyle: { color: c.s1, borderRadius: [0, 4, 4, 0] },
-        emphasis: { itemStyle: { opacity: 0.85 } },
+        type: 'bar', barMaxWidth: 18, barCategoryGap: '30%',
+        data: rank.map((e, i) => ({ value: e[estado.metrica], itemStyle: { color: i === rank.length - 1 ? c.s1 : c.gris } })),
+        itemStyle: { borderRadius: [0, 4, 4, 0] },
         label: { show: true, position: 'right', color: c.text2, fontSize: 12, formatter: (p) => m.f.format(p.value) },
       }],
     }, true);
 
-    // Histograma
+    // 3. Cuánto hace falta
     const n = D.escuelas[0].hist.length;
     const ingH = Array(n).fill(0), noH = Array(n).fill(0);
     for (const e of E) e.hist.forEach(([no, si], i) => { noH[i] += no; ingH[i] += si; });
     let ultimo = n - 1;
     while (ultimo > 0 && !ingH[ultimo] && !noH[ultimo]) ultimo--;
     const rangos = Array.from({ length: ultimo + 1 }, (_, i) => `${i * D.ancho_rango}`);
+    const corte = 1000 / D.ancho_rango;
+    const sobreCorteNo = noH.slice(corte).reduce((a, b) => a + b, 0);
+    $('t-hist').textContent = sobreCorteNo
+      ? `Con 1,000 puntos no basta: ${fmt.format(sobreCorteNo)} postulantes los superaron y no ingresaron`
+      : 'Distribución de puntajes del filtro';
     chart('c-hist').setOption({
       ...base(c),
-      grid: { left: 8, right: 8, top: 12, bottom: 8, containLabel: true },
-      xAxis: ejeCat(c, { data: rangos, axisLabel: { color: c.muted, fontSize: 12, interval: 1 } }),
-      yAxis: ejeValor(c, { axisLabel: { color: c.muted, fontSize: 12, formatter: (v) => v >= 1000 ? `${v / 1000}K` : v } }),
+      grid: { left: 44, right: 8, top: 28, bottom: 28, containLabel: false },
+      xAxis: ejeCat(c, { data: rangos, axisLabel: { color: c.muted, interval: estrecho('c-hist') ? 3 : 1 } }),
+      yAxis: ejeValor(c, { axisLabel: { formatter: (v) => (v >= 1000 ? `${v / 1000}K` : v) } }),
       tooltip: { ...base(c).tooltip, trigger: 'axis', axisPointer: { type: 'shadow', shadowStyle: { color: c.grid, opacity: 0.5 } }, formatter: (ps) => {
         const i = ps[0].dataIndex;
-        return `<span style="color:${c.muted}">${i * D.ancho_rango} – ${(i + 1) * D.ancho_rango - 1} puntos</span><br>` +
+        return `<span style="color:${c.muted}">${fmt.format(i * D.ancho_rango)} – ${fmt.format((i + 1) * D.ancho_rango - 1)} puntos</span><br>` +
           `<strong>${fmt.format(ingH[i])}</strong> ${linea(c.s1, 'ingresaron')}<br><strong>${fmt.format(noH[i])}</strong> ${linea(c.gris, 'no ingresaron')}`;
       } },
       series: [
         { name: 'No ingresó', type: 'bar', stack: 'p', data: noH.slice(0, ultimo + 1), barCategoryGap: '12%',
-          itemStyle: { color: c.gris, borderColor: c.surface, borderWidth: 1 } },
+          itemStyle: { color: c.gris },
+          markArea: sobreCorteNo && ultimo >= corte ? {
+            silent: true, itemStyle: { color: c.wash, opacity: 0.55 },
+            label: { show: true, position: 'insideTop', color: c.text2, fontSize: 12, formatter: '1,000 puntos o más' },
+            data: [[{ xAxis: `${corte * D.ancho_rango}` }, { xAxis: rangos[ultimo] }]],
+          } : undefined },
         { name: 'Ingresó', type: 'bar', stack: 'p', data: ingH.slice(0, ultimo + 1),
           itemStyle: { color: c.s1, borderColor: c.surface, borderWidth: 1, borderRadius: [4, 4, 0, 0] } },
       ],
     }, true);
 
-    // Dispersión
+    // 4. Por qué: demanda vs exigencia
     const pts = E.filter((e) => e.puntaje_minimo_ingreso !== '');
-    const destacadas = new Set([...pts].sort((a, b) => b.postulantes - a.postulantes).slice(0, 2).map((e) => e.codigo_escuela));
+    let r = null;
+    if (pts.length >= 5) {
+      const xs = pts.map((e) => Math.log10(e.postulantes)), ys = pts.map((e) => e.puntaje_minimo_ingreso);
+      const mx = xs.reduce((a, b) => a + b) / xs.length, my = ys.reduce((a, b) => a + b) / ys.length;
+      let sxy = 0, sxx = 0, syy = 0;
+      xs.forEach((x, i) => { sxy += (x - mx) * (ys[i] - my); sxx += (x - mx) ** 2; syy += (ys[i] - my) ** 2; });
+      r = sxx && syy ? sxy / Math.sqrt(sxx * syy) : null;
+    }
+    $('t-disp').textContent = r !== null && r >= 0.5 ? 'A más postulantes, más puntaje para ingresar' : 'Postulantes y puntaje mínimo por escuela';
+    $('s-disp').textContent = `Cada punto es una escuela. Eje vertical: puntaje mínimo de ingreso${r !== null ? ` · correlación r = ${r.toFixed(2)}` : ''}`;
+    const marcar = new Set();
+    const porPost = [...pts].sort((a, b) => b.postulantes - a.postulantes);
+    const porPunt = [...pts].sort((a, b) => b.puntaje_minimo_ingreso - a.puntaje_minimo_ingreso);
+    if (porPost[0]) marcar.add(porPost[0].codigo_escuela);
+    const otraExigente = porPunt.find((e) => !marcar.has(e.codigo_escuela));
+    if (otraExigente) marcar.add(otraExigente.codigo_escuela);
+    const atipica = porPost.at(-1);
+    if (atipica && pts.length > 3 && atipica.postulantes_por_vacante !== '' && atipica.postulantes_por_vacante < 2) marcar.add(atipica.codigo_escuela);
+    const etiquetaPunto = (e) => e === atipica && marcar.has(e.codigo_escuela) && e !== porPost[0]
+      ? `${titulo(e.escuela_base)}: ${e.postulantes} postulantes, ${e.ingresantes} vacantes`
+      : titulo(e.escuela_base);
     chart('c-disp').setOption({
       ...base(c),
-      grid: { left: 8, right: 24, top: 16, bottom: 24, containLabel: true },
-      xAxis: ejeValor(c, { type: 'log', logBase: 10, name: 'postulantes (escala log)', nameLocation: 'middle', nameGap: 28, nameTextStyle: { color: c.muted, fontSize: 12 },
-        axisLabel: { color: c.muted, fontSize: 12, formatter: (v) => v >= 1000 ? `${v / 1000}K` : v } }),
-      yAxis: ejeValor(c, { scale: true }),
+      grid: { left: 48, right: 24, top: 28, bottom: 44, containLabel: false },
+      xAxis: ejeValor(c, { type: 'log', logBase: 10, min: 5, name: 'postulantes (escala log)', nameLocation: 'middle', nameGap: 28, nameTextStyle: { color: c.muted, fontSize: 12 },
+        axisLabel: { formatter: (v) => (v >= 1000 ? `${v / 1000}K` : v) } }),
+      yAxis: ejeValor(c, { scale: true, name: 'puntaje mínimo', nameTextStyle: { color: c.muted, fontSize: 12, align: 'left' } }),
       tooltip: { ...base(c).tooltip, trigger: 'item', formatter: (p) => {
         const e = pts[p.dataIndex];
         return `<strong style="font-size:15px">${fmt1.format(e.puntaje_minimo_ingreso)}</strong> puntaje mínimo<br>` +
@@ -370,47 +505,69 @@
       series: [{
         type: 'scatter', symbolSize: 10,
         data: pts.map((e) => ({ value: [e.postulantes, e.puntaje_minimo_ingreso],
-          label: { show: destacadas.has(e.codigo_escuela), formatter: titulo(e.escuela_base), position: 'left', color: c.text2, fontSize: 12 } })),
+          label: { show: marcar.has(e.codigo_escuela), formatter: etiquetaPunto(e), position: e.postulantes > 1000 ? 'left' : 'top', color: c.text2, fontSize: 12 } })),
         itemStyle: { color: c.s1, borderColor: c.surface, borderWidth: 2, opacity: 0.9 },
+        labelLayout: { hideOverlap: true, moveOverlap: 'shiftY' },
         emphasis: { scale: 1.4 },
       }],
     }, true);
 
-    // Por facultad
-    const porFac = new Map();
+    // 5. La alternativa: otras sedes
+    const porSede = new Map();
     for (const e of E) {
-      const a = porFac.get(e.facultad) ?? { p: 0, i: 0 };
-      a.p += e.postulantes; a.i += e.ingresantes; porFac.set(e.facultad, a);
+      const a = porSede.get(e.sede) ?? { p: 0, i: 0 };
+      a.p += e.postulantes; a.i += e.ingresantes; porSede.set(e.sede, a);
     }
-    const fac = [...porFac].map(([f, a]) => ({ f, ...a, t: a.i / a.p })).sort((a, b) => a.t - b.t);
-    chart('c-facultad').setOption({
+    const sedes = [...porSede].map(([s, a]) => ({ s, ...a, t: a.i / a.p })).sort((a, b) => a.t - b.t);
+    const cu = sedes.find((x) => x.s === CU);
+    const mejor = sedes.at(-1);
+    $('t-sedes').textContent = cu && mejor && mejor.s !== CU
+      ? `Fuera de Ciudad Universitaria es más fácil ingresar: ${pct.format(mejor.t)} en ${mejor.s} frente a ${pct.format(cu.t)}`
+      : 'Tasa de ingreso por sede';
+    chart('c-sedes').setOption({
       ...base(c),
-      grid: { left: 8, right: 56, top: 8, bottom: 8, containLabel: true },
-      xAxis: ejeValor(c, { axisLabel: { color: c.muted, fontSize: 12, formatter: (v) => pct.format(v).replace(',0', '') } }),
-      yAxis: ejeCat(c, { data: fac.map((x) => x.f), axisLabel: { color: c.text2, fontSize: 12, width: anchoEtiqueta('c-facultad', 280), overflow: 'truncate' } }),
+      ...barrasH(c, 'c-sedes', sedes.map((x) => x.s), 170),
+      xAxis: ejeValor(c, { splitNumber: 2, max: (v) => Math.max(v.max * 1.15, 0.1), axisLabel: { showMaxLabel: false, formatter: (v) => pct.format(v).replace(',0', '').replace('.0', '') } }),
       tooltip: { ...base(c).tooltip, trigger: 'item', formatter: (p) => {
-        const x = fac[p.dataIndex];
-        return `<strong style="font-size:15px">${pct.format(x.t)}</strong> ingresó<br>${esc(x.f)}<br>` +
-          `<span style="color:${c.muted}">${fmt.format(x.i)} de ${fmt.format(x.p)} postulantes</span>`;
+        const x = sedes[p.dataIndex];
+        return `<strong style="font-size:15px">${pct.format(x.t)}</strong> ingresó<br>${esc(x.s)}<br><span style="color:${c.muted}">${fmt.format(x.i)} de ${fmt.format(x.p)} postulantes</span>`;
       } },
       series: [{
-        type: 'bar', data: fac.map((x) => x.t), barMaxWidth: 16, barCategoryGap: '30%',
-        itemStyle: { color: c.s1, borderRadius: [0, 4, 4, 0] },
+        type: 'bar', barMaxWidth: 18, barCategoryGap: '35%',
+        data: sedes.map((x) => ({ value: x.t, itemStyle: { color: x.s === CU ? c.gris : c.s1 } })),
+        itemStyle: { borderRadius: [0, 4, 4, 0] },
         label: { show: true, position: 'right', color: c.text2, fontSize: 12, formatter: (p) => pct.format(p.value) },
       }],
     }, true);
+    const grupos = new Map();
+    for (const e of E) {
+      if (!grupos.has(e.escuela_base)) grupos.set(e.escuela_base, {});
+      grupos.get(e.escuela_base)[e.sede] = e;
+    }
+    const multi = [...grupos].filter(([, g]) => Object.keys(g).length > 1).sort((a, b) => a[0].localeCompare(b[0], 'es'));
+    $('sedes-vacio').hidden = multi.length > 0;
+    $('sedes-filas').replaceChildren(...multi.map(([nombre, g]) => {
+      const tr = document.createElement('tr');
+      const td0 = document.createElement('td'); td0.className = 'escuela'; td0.textContent = titulo(nombre); tr.appendChild(td0);
+      for (const s of [CU, 'San Juan de Lurigancho', 'Huaral']) {
+        const td = document.createElement('td'); td.className = 'num';
+        td.textContent = g[s] && g[s].puntaje_minimo_ingreso !== '' ? fmt1.format(g[s].puntaje_minimo_ingreso) : '–';
+        tr.appendChild(td);
+      }
+      return tr;
+    }));
 
     tabla(E);
   }
 
   // Tabla
   const COLS = [
-    ['escuela', 'Escuela', false], ['facultad', 'Facultad', false], ['sede', 'Sede', false],
+    ['escuela', 'Escuela', false], ['sede', 'Sede', false],
     ['postulantes', 'Postulantes', true], ['ingresantes', 'Ingresantes', true],
     ['postulantes_por_vacante', 'Post./vacante', true], ['tasa_ingreso', 'Tasa', true],
     ['puntaje_minimo_ingreso', 'Puntaje mín.', true], ['puntaje_maximo', 'Puntaje máx.', true],
   ];
-  const cab = document.getElementById('cabecera');
+  const cab = $('cabecera');
   for (const [k, nombre, num] of COLS) {
     const th = document.createElement('th');
     if (num) th.className = 'num';
@@ -432,11 +589,10 @@
       th.setAttribute('aria-sort', b.dataset.k === k ? (estado.desc ? 'descending' : 'ascending') : 'none');
       b.textContent = COLS.find((x) => x[0] === b.dataset.k)[1] + (b.dataset.k === k ? (estado.desc ? ' ↓' : ' ↑') : '');
     }
-    const tb = document.getElementById('filas');
-    tb.replaceChildren(...filas.map((e) => {
+    $('filas').replaceChildren(...filas.map((e) => {
       const tr = document.createElement('tr');
       const celdas = [
-        [titulo(e.escuela), 'escuela'], [e.facultad], [e.sede],
+        [titulo(e.escuela), 'escuela'], [e.sede],
         [fmt.format(e.postulantes), 'num'], [fmt.format(e.ingresantes), 'num'],
         [e.postulantes_por_vacante === '' ? '–' : fmt1.format(e.postulantes_por_vacante), 'num'],
         [pct.format(e.tasa_ingreso), 'num'],
@@ -454,15 +610,15 @@
   }
 
   // Eventos
-  document.getElementById('f-facultad').addEventListener('change', (ev) => { estado.facultad = ev.target.value; render(); });
-  document.getElementById('f-sede').addEventListener('change', (ev) => { estado.sede = ev.target.value; render(); });
-  document.getElementById('limpiar').addEventListener('click', () => {
+  $('f-facultad').addEventListener('change', (ev) => { estado.facultad = ev.target.value; render(); });
+  $('f-sede').addEventListener('change', (ev) => { estado.sede = ev.target.value; render(); });
+  $('limpiar').addEventListener('click', () => {
     estado.facultad = estado.sede = TODAS;
-    document.getElementById('f-facultad').value = TODAS;
-    document.getElementById('f-sede').value = TODAS;
+    $('f-facultad').value = TODAS;
+    $('f-sede').value = TODAS;
     render();
   });
-  document.getElementById('buscar').addEventListener('input', (ev) => { estado.busca = ev.target.value; tabla(filtradas()); });
+  $('buscar').addEventListener('input', (ev) => { estado.busca = ev.target.value; tabla(filtradas()); });
   for (const b of document.querySelectorAll('.seg button')) {
     b.addEventListener('click', () => {
       estado.metrica = b.dataset.metrica;
@@ -472,6 +628,7 @@
   }
 
   render();
+  document.fonts?.ready.then(render);
 })();
 </script>
 </body>
