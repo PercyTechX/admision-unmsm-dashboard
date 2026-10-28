@@ -4,6 +4,8 @@ Dashboard interactivo de los resultados del **Examen de Admisión 2027-I de la U
 
 **🔗 Ver el dashboard:** https://percytechx.github.io/admision-unmsm-dashboard/
 
+**📊 Versión Power BI:** [ver el informe en línea](https://app.powerbi.com/view?r=eyJrIjoiYmY0NDJmOTUtMjdjOC00NWEzLWI2ZjYtMmIyODRmZWQzNDg4IiwidCI6IjFlYmE0NDNmLTIzZTUtNDUzNC05MGQxLTA5NzZhYWJlODZhYyIsImMiOjR9) · archivo [`powerbi/admision-unmsm-2027-I.pbix`](powerbi/admision-unmsm-2027-I.pbix) · [tutorial paso a paso](powerbi/TUTORIAL_POWERBI.md)
+
 ## Hallazgos
 
 - **Medicina Humana es la carrera más disputada:** 4,841 postulantes para 55 vacantes (88 por vacante). El último ingresante obtuvo **1,404.5 puntos**, más de 220 por encima de la siguiente escuela (Ingeniería Civil, 1,182.4).
@@ -20,7 +22,7 @@ scraper/scrape.mjs     → descarga los resultados públicos (Node.js, sin depen
 scraper/transform.mjs  → limpia, agrega facultad y sede, calcula indicadores
 data/                  → CSV listos para Power BI o Excel
 docs/                  → dashboard HTML (ECharts), publicado con GitHub Pages
-powerbi/               → guía y medidas DAX para la versión en Power BI
+powerbi/               → informe .pbix, tutorial paso a paso, guía rápida y medidas DAX
 ```
 
 ```bash
