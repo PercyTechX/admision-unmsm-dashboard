@@ -4,7 +4,7 @@ Este tutorial arma desde cero en Power BI Desktop el informe del dashboard HTML 
 
 > Resumen rápido de lo mismo: [`GUIA_POWERBI.md`](GUIA_POWERBI.md). Fórmulas: [`medidas.dax`](medidas.dax).
 
-**Estado:** completo. Informe publicado: [ver en Power BI](https://app.powerbi.com/view?r=eyJrIjoiYmY0NDJmOTUtMjdjOC00NWEzLWI2ZjYtMmIyODRmZWQzNDg4IiwidCI6IjFlYmE0NDNmLTIzZTUtNDUzNC05MGQxLTA5NzZhYWJlODZhYyIsImMiOjR9).
+**Estado:** completo, con diseño de portafolio (Paso 8). Informe publicado: [ver en Power BI](https://app.powerbi.com/view?r=eyJrIjoiYmY0NDJmOTUtMjdjOC00NWEzLWI2ZjYtMmIyODRmZWQzNDg4IiwidCI6IjFlYmE0NDNmLTIzZTUtNDUzNC05MGQxLTA5NzZhYWJlODZhYyIsImMiOjR9).
 
 ## Antes de empezar
 
@@ -365,3 +365,51 @@ Ingresantes (texto) = FORMAT ( [Ingresantes], "#,0" )
 ### 7c. Actualizar el informe más adelante
 
 Si cambias algo en Desktop, vuelve a **Inicio → Publicar** al mismo destino y elige **Reemplazar**. El vínculo público no cambia.
+
+---
+
+## Paso 8: Diseño para portafolio (tema guinda)
+
+Con los pasos anteriores el informe funciona, pero se ve "por defecto". Este paso lo alinea con el dashboard HTML: guinda, fondo crema y visuales en tarjetas.
+
+### 8a. Revisar errores antes de decorar
+
+Un reclutador nota antes un número mal que un color feo. Revisa:
+- Que la tarjeta de ingresantes use `FORMAT ( [Ingresantes], "#,0" )` y muestre **2,474** (es fácil copiar la medida y dejar `[Postulantes]`).
+- `Postulantes` e `Ingresantes` en **Número entero**, 0 decimales, separador de miles. Si no, la tabla muestra `226.000`.
+- La tabla ordenada por `Postulantes por vacante` descendente.
+- Las etiquetas sin guiones bajos ni nombres técnicos: doble clic en el campo dentro de **Compilar objeto visual** para renombrarlo solo en ese visual.
+
+### 8b. Aplicar el tema
+
+1. Pestaña **Ver** (o **Diseño** en versiones nuevas) → grupo **Temas** → flechita **▾** → **Examinar temas** → [`tema-unmsm.json`](tema-unmsm.json).
+2. Los colores puestos a mano **no cambian con el tema**: un color manual le gana al tema. En cada visual donde pusiste azul, cámbialo al primer color del tema (guinda `#9E0C26`). En la tasa por facultad: Medicina en guinda y el resto en gris `#B9AEAC`.
+
+**Qué trae el tema:** paleta guinda, fondo de página `#F5F1EF`, visuales en tarjetas blancas con borde redondeado y sombra suave, y tipografía Segoe UI uniforme.
+
+**Por qué un tema:** el estilo se define una vez, en un archivo, y todo el informe queda consistente. Si cambia la marca, se cambia el JSON y no 30 visuales a mano.
+
+### 8c. Banda del titular
+
+1. Borra el cuadro de texto del titular anterior.
+2. **Insertar → Formas → Rectángulo**, a lo ancho y arriba, de unos 110 px de alto. Pincel → **Relleno** `#6B0719`, sin contorno, esquinas redondeadas 12.
+3. **Insertar → Cuadro de texto** encima:
+   - Línea 1, blanca, 26, negrita: **En San Marcos ingresa 1 de cada 12. En Medicina, 1 de cada 88.**
+   - Línea 2, `#F2D2D8`, 12: *Examen de Admisión UNMSM 2027-I · 28,668 postulantes · Datos públicos de la OCA*
+4. **Fondo transparente del cuadro:** pincel → **General → Efectos → Fondo → Desactivado** (o Transparencia 100 %).
+5. **Ponerlo encima del rectángulo:** pestaña **Formato → Traer al frente**, o clic derecho → **Traer al frente**.
+
+**Por qué:** es lo primero que se ve. Repite la portada guinda del HTML y las dos versiones se reconocen como un mismo proyecto.
+
+### 8d. Ajustes de espacio
+
+- **Tabla:** más alta, para que se vean al menos 10 filas.
+- **Dispersión:** **Eje Y → Rango** de 500 a 1,500 y **Unidades de visualización: Ninguno** ("1,000" en vez de "1 mil").
+- **Barras:** sin scroll; más altas o con **Top 10**.
+- **Filtros:** etiquetas *Facultad* y *Sede* con mayúscula inicial.
+
+### 8e. Republicar
+
+**Ctrl + S** → **Inicio → Publicar** → *Mi área de trabajo* → **Reemplazar**. El enlace público no cambia y se actualiza en unos minutos.
+
+> Republica solo cuando el diseño esté terminado: el enlace ya es público y está en el README.

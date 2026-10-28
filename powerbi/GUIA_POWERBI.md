@@ -28,7 +28,7 @@ Crea las medidas y columnas de `medidas.dax` en la tabla `detalle`. Dales format
 | **Barras horizontales:** tasa por facultad | Eje Y: `escuelas[facultad]`; valor: `Tasa de ingreso`; orden ascendente |
 | **Tabla** | `escuela`, `facultad`, `sede` + las medidas |
 
-Colores sugeridos, para que coincida con la versión HTML: azul `#2a78d6` para "Ingresó" y las barras, gris `#c3c2b7` para "No ingresó", y fondo `#fcfcfb`.
+Colores: aplica el tema [`tema-unmsm.json`](tema-unmsm.json) (Ver → Temas → Examinar temas), con guinda `#9E0C26` para "Ingresó" y el dato clave, gris `#B9AEAC` para "No ingresó" y fondo `#F5F1EF`, igual que la versión HTML.
 
 ## 4. Publicar
 
