@@ -376,7 +376,7 @@ Con los pasos anteriores el informe funciona, pero se ve "por defecto". Este pas
 
 Un reclutador nota antes un número mal que un color feo. Revisa:
 - Que la tarjeta de ingresantes use `FORMAT ( [Ingresantes], "#,0" )` y muestre **2,474** (es fácil copiar la medida y dejar `[Postulantes]`).
-- `Postulantes` e `Ingresantes` en **Número entero**, 0 decimales, separador de miles. Si no, la tabla muestra `226.000`.
+- `Postulantes` e `Ingresantes` en **Número entero**, 0 decimales, separador de miles. Si no, la tabla muestra `226.000`. Ojo: la tabla usa las **medidas** (empiezan con mayúscula), así que el formato se cambia seleccionando la medida en **Herramientas de medición**. Cambiar la columna `escuelas[postulantes]` en *Herramientas de columnas* no tiene efecto.
 - La tabla ordenada por `Postulantes por vacante` descendente.
 - Las etiquetas sin guiones bajos ni nombres técnicos: doble clic en el campo dentro de **Compilar objeto visual** para renombrarlo solo en ese visual.
 

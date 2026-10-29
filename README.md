@@ -6,6 +6,8 @@ Dashboard interactivo de los resultados del **Examen de Admisión 2027-I de la U
 
 **📊 Versión Power BI:** [ver el informe en línea](https://app.powerbi.com/view?r=eyJrIjoiYmY0NDJmOTUtMjdjOC00NWEzLWI2ZjYtMmIyODRmZWQzNDg4IiwidCI6IjFlYmE0NDNmLTIzZTUtNDUzNC05MGQxLTA5NzZhYWJlODZhYyIsImMiOjR9) · archivo [`powerbi/admision-unmsm-2027-I.pbix`](powerbi/admision-unmsm-2027-I.pbix) · [tutorial paso a paso](powerbi/TUTORIAL_POWERBI.md)
 
+![Informe Power BI de la admisión UNMSM 2027-I: tarjetas con 28,668 postulantes, 2,474 ingresantes y 8.6 % de ingreso; ranking de postulantes por vacante encabezado por Medicina Humana (88), tasa de ingreso por facultad, histograma de puntajes, dispersión demanda vs. puntaje mínimo y tabla de escuelas](docs/img/powerbi-informe.png)
+
 ## Hallazgos
 
 - **Medicina Humana es la carrera más disputada:** 4,841 postulantes para 55 vacantes (88 por vacante). El último ingresante obtuvo **1,404.5 puntos**, más de 220 por encima de la siguiente escuela (Ingeniería Civil, 1,182.4).
